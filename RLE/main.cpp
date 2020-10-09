@@ -11,6 +11,7 @@
 using namespace std;
 
 string run_length_encoding(string);
+
 bool assertAll();
 
 int main() {
@@ -21,9 +22,8 @@ int main() {
 /**
  * Преобразует T в строку
  */
-template <typename T>
-std::string to_string (T value )
-{
+template<typename T>
+std::string to_string(T value) {
     std::ostringstream ss;
     ss << value;
     return ss.str();
@@ -65,9 +65,9 @@ string run_length_encoding(string text) {
  */
 bool assertAll() {
     return run_length_encoding("abbbccddd") == "a1b3c2d3"
-    && run_length_encoding("aaaaaaaa") == "a8"
-    && run_length_encoding("aabbccdd") == "a2b2c2d2"
-    && run_length_encoding("abcd") == "a1b1c1d1"
-    && run_length_encoding("aaaaaaaaad") == "a9d1"
-    && run_length_encoding("").empty();
+           && run_length_encoding("aaaaaaaa") == "a8"
+           && run_length_encoding("aabbccdd") == "a2b2c2d2"
+           && run_length_encoding("abcd") == "a1b1c1d1"
+           && run_length_encoding("aaaaaaaaad") == "a9d1"
+           && run_length_encoding("").empty();
 }
