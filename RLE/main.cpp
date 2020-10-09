@@ -12,6 +12,8 @@ using namespace std;
 
 string run_length_encoding(string);
 
+void append_encode(string &, char, int);
+
 bool assertAll();
 
 int main() {
@@ -44,19 +46,31 @@ string run_length_encoding(string text) {
     for (int i = 1; i < text.length(); ++i, ++counter) {
         char current = text[i];
         if (current != last) {
-            result += last;
-            result += to_string(counter);
+            append_encode(result, last, counter);
             counter = 0;
             last = current;
         }
     }
     // проверяем счетчик (чтобы все буквы, в том числе и последняя)
     // были записаны в результирующую строку
-    if (counter != 0) {
-        result += last;
-        result += to_string(counter);
-    }
+    append_encode(result, last, counter);
     return result;
+}
+
+/**
+ * Добавляет в результирующую строку закодированную букву с ее
+ * количеством повторений (или просто букву без повторений)
+ */
+void append_encode(string &result, char letter, int counter) {
+    if (counter > 1) {
+        result += '(';
+        result += to_string(counter);
+        result += ',';
+        result += letter;
+        result += ')';
+    } else if (counter == 1) {
+        result += letter;
+    }
 }
 
 /**
@@ -64,10 +78,10 @@ string run_length_encoding(string text) {
  * Возвращает true, если все тесты пройдены.
  */
 bool assertAll() {
-    return run_length_encoding("abbbccddd") == "a1b3c2d3"
-           && run_length_encoding("aaaaaaaa") == "a8"
-           && run_length_encoding("aabbccdd") == "a2b2c2d2"
-           && run_length_encoding("abcd") == "a1b1c1d1"
-           && run_length_encoding("aaaaaaaaad") == "a9d1"
+    return run_length_encoding("abbbccddd") == "a(3,b)(2,c)(3,d)"
+           && run_length_encoding("aaaaaaaa") == "(8,a)"
+           && run_length_encoding("aabbccdd") == "(2,a)(2,b)(2,c)(2,d)"
+           && run_length_encoding("abcd") == "abcd"
+           && run_length_encoding("aaaaaaaaad") == "(9,a)d"
            && run_length_encoding("").empty();
 }
