@@ -1,0 +1,3 @@
+"C:\Programs\JetBrains\CLion 2020.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\Gray.dir/objects.a
+C:\MinGW\bin\ar.exe cr CMakeFiles\Gray.dir/objects.a @CMakeFiles\Gray.dir\objects1.rsp
+C:\MinGW\bin\g++.exe -g   -Wl,--whole-archive CMakeFiles\Gray.dir/objects.a -Wl,--no-whole-archive  -o Gray.exe -Wl,--out-implib,libGray.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Gray.dir\linklibs.rsp

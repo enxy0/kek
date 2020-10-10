@@ -1,0 +1,3 @@
+C:/Users/enxy0/IdeaProjects/kek/Gray/cmake-build-debug/CMakeFiles/Gray.dir
+C:/Users/enxy0/IdeaProjects/kek/Gray/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/enxy0/IdeaProjects/kek/Gray/cmake-build-debug/CMakeFiles/rebuild_cache.dir
