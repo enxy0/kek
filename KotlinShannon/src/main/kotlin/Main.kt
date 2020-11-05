@@ -23,13 +23,14 @@ fun main() {
 }
 
 /** Считывает список целочисленных значений из консоли */
-fun input(): List<Int> =
+fun input(): BinaryList =
     readLine()!!
         .split(' ')
         .map { it.toInt() }
+        .toMutableList()
 
 /** Производит кодирование методом Шеннона */
-fun encodeWithShannonMethod(lengths: List<Int>): List<List<Int>> {
+fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
     val kraftCondition = lengths.foldIndexed(0.0) { index, acc, item ->
         val isNotFirstAndNotLast =
             index != 0 && index != lengths.size
@@ -45,7 +46,7 @@ fun encodeWithShannonMethod(lengths: List<Int>): List<List<Int>> {
         return emptyList()
     }
 
-    return lengths.fold(mutableListOf<MutableList<Int>>()) { acc, length ->
+    return lengths.fold(mutableListOf<BinaryList>()) { acc, length ->
         val twoInNegativePower =
             filledList(length - 1).apply { add(1) }
         val previous = acc.lastOrNull()
@@ -59,7 +60,7 @@ fun encodeWithShannonMethod(lengths: List<Int>): List<List<Int>> {
  * Свойство isPrefixed, вычисляющее является ли построенный
  * код префиксным
  */
-val List<List<Int>>.isPrefixed: Boolean
+val List<BinaryList>.isPrefixed: Boolean
     get() {
         for (i in indices) {
             for (j in i + 1 until size) {
@@ -88,7 +89,7 @@ val List<List<Int>>.isPrefixed: Boolean
  * Если списки имеют разную длину, то они выравниваются путем добравления
  * нулей в конец меньшего списка.
  */
-infix fun MutableList<Int>.addTo(other: MutableList<Int>): MutableList<Int> {
+infix fun BinaryList.addTo(other: BinaryList): BinaryList {
     var remainder = 0
     val (first, second) = syncLists(this, other)
     return first.foldRightIndexed(mutableListOf()) { index, item1, acc ->
@@ -100,9 +101,9 @@ infix fun MutableList<Int>.addTo(other: MutableList<Int>): MutableList<Int> {
 }
 
 /** Возвращает двоичное представление числа Int в виде List<Int> */
-fun Int.toBinaryList() = toString(radix = 2).map {
+fun Int.toBinaryList(): BinaryList = toString(radix = 2).map {
     it.toString().toInt()
-}
+}.toMutableList()
 
 /**
  *  Создает изменяемый список заданного размера size,
@@ -117,10 +118,10 @@ fun filledList(size: Int, value: Int = 0) =
  * из списков.
  */
 fun syncLists(
-    first: MutableList<Int>,
-    second: MutableList<Int>,
+    first: BinaryList,
+    second: BinaryList,
     value: Int = 0
-): Pair<MutableList<Int>, MutableList<Int>> {
+): Pair<BinaryList, BinaryList> {
     if (first.size < second.size) {
         first.addAll(filledList(second.size - first.size, value))
     } else {
@@ -128,3 +129,5 @@ fun syncLists(
     }
     return first to second
 }
+
+typealias BinaryList = MutableList<Int>
