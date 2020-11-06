@@ -13,9 +13,7 @@ fun main() {
     runTests()
 }
 
-/**
- * Кодирует text с помощью RLE алгоритма
- */
+/** Кодирует text с помощью RLE алгоритма */
 fun encodeRle(text: String): String {
     var last: Char = text.firstOrNull() ?: return ""
     var counter = 1
@@ -32,9 +30,7 @@ fun encodeRle(text: String): String {
     return result
 }
 
-/**
- * Декодирует text из RLE
- */
+/** Декодирует text из RLE */
 fun decodeRle(text: String): String = if (text.isNotEmpty()) {
     text.split(' ')
         .map { it[1].toString() to it[3].toString().toInt() }
@@ -43,9 +39,7 @@ fun decodeRle(text: String): String = if (text.isNotEmpty()) {
         }
 } else ""
 
-/**
- * Запускает серию тестов с выводом результата в консоль
- */
+/** Запускает серию тестов с выводом результата в консоль */
 fun runTests() {
     test("")
     test("abc")
@@ -56,9 +50,7 @@ fun runTests() {
     test("aaaaaaaa")
 }
 
-/**
- * Запускает тест для конкретного значения
- */
+/** Запускает тест для конкретного значения */
 fun test(text: String): Boolean {
     val encodedText = encodeRle(text)
     val decodedText = decodeRle(encodedText)
@@ -67,7 +59,5 @@ fun test(text: String): Boolean {
     return isCorrect
 }
 
-/**
- * Строковое представление пары из буквы и количества ее повторений - (a, 4)
- */
+/** Строковое представление пары из буквы и количества ее повторений - (a, 4) */
 fun toStringPair(letter: Char, counter: Int) = "($letter,$counter)"
