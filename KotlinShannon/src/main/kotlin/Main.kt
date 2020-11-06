@@ -1,3 +1,5 @@
+import kotlin.math.ceil
+import kotlin.math.log2
 import kotlin.math.pow
 
 /**
@@ -14,20 +16,26 @@ import kotlin.math.pow
 
 
 fun main() {
-    val encodedList = encodeWithShannonMethod(input())
-    if (encodedList.isPrefixed) {
-        println(encodedList)
-    } else {
-        println("Построенный код не является префиксным!")
-    }
+//    Метод Шеннона
+//    val encodedList = encodeWithShannonMethod(inputNumbers())
+//    if (encodedList.isPrefixed) {
+//        println(encodedList)
+//    } else {
+//        println("Построенный код не является префиксным!")
+//    }
+
+// Код Шеннона-Фано
+    encodeWithShannonFano(inputString())
 }
 
 /** Считывает список целочисленных значений из консоли */
-fun input(): BinaryList =
+fun inputNumbers(): BinaryList =
     readLine()!!
         .split(' ')
         .map { it.toInt() }
         .toMutableList()
+
+fun inputString(): String = readLine()!!.toString()
 
 /** Производит кодирование методом Шеннона */
 fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
@@ -54,6 +62,35 @@ fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
 
         acc.apply { add(previous addTo twoInNegativePower) }
     }.dropLast(1)
+}
+
+fun encodeWithShannonFano(input: String): List<BinaryList> {
+    val map = input.map { it }
+        .toSet()
+        .map { letter ->
+            val count = input.filter { letter == it }.length
+            val probability = count / input.length.toDouble()
+
+            letter to probability
+        }
+        .sortedByDescending { it.second }
+        .toMap()
+        .also { println(it) }
+
+    val cumulativeList = map.values
+        .runningFold(0.0) { acc, item -> acc + item }
+        .dropLast(1)
+        .toMutableList()
+
+    val words = map.toList().forEachIndexed { index, (_, freq) ->
+        val digit = ceil(log2(freq)).toInt()
+        cumulativeList[index] *= 2.0
+
+        for (j in 1 until digit) {
+            
+        }
+    }
+    return emptyList()
 }
 
 /**
