@@ -4,13 +4,12 @@
  *   - код Левенштейна, гамма-код Левенштейна;
  *   - коды Элайеса: омега-код, гамма-код, дельта-код;
  *   - коды Ивэн-Родэ;
- *   - код Голомба, код Райса;
- *   - экспоненциальный код Голомба;
- *   - код Фибоначчи;
- *   - шаговые коды: старт-шаг-стоп коды, старт-шаг коды.
+ *
+ * Количество решенных задач: 7
+ * Общее количество задач: 11
  *
  * Автор: Бушуев Никита Федорович
- * Дата: 12.10.2020
+ * Дата: 12.10.2020, 17.10.2020
  * Kotlin: 1.4.10 (jvm)
  */
 
@@ -132,13 +131,20 @@ fun encodeEliasGamma(n: Int): List<Int> {
 }
 
 /**
+ * 6. Декодирует число из Гамма-кода Элайеса в десятичное
+ */
+fun decodeEliasGamma(bits: List<Int>): Int {
+    if (bits.size % 2 == 0) throw WrongParameterException("Не существует числа для $bits в Гамма-коде Элайеса!")
+    return (listOf(0) + bits).drop((bits.size + 1) / 2 - 1).toDecimal()
+}
+
+/**
  * 7. Переводит число в Дельта-код Элайеса
  */
 fun encodeEliasDelta(n: Int): List<Int> {
     if (n == 0) throw WrongParameterException("Для n = 0 не существует Дельта-кода Элайеса!")
     return encodeEliasGamma(log2(n) + 1) + n.toBinaryListDropped()
 }
-
 
 
 /*
@@ -176,6 +182,13 @@ fun Int.toBinaryListFixed(size: Int, fill: Int = 0): List<Int> {
         result.add(0, fill)
     }
     return result
+}
+
+/**
+ * List<Int>.toDecimal
+ */
+fun List<Int>.toDecimal(): Int {
+    return joinToString(separator = "").toInt(radix = 2)
 }
 
 /**
@@ -223,124 +236,163 @@ fun runTests() {
 }
 
 fun unaryTests(): Boolean {
-    return encodeToUnary(1) == listOf(1, 0) &&
-        encodeToUnary(2) == listOf(1, 1, 0) &&
-        encodeToUnary(3) == listOf(1, 1, 1, 0) &&
-        encodeToUnary(4) == listOf(1, 1, 1, 1, 0) &&
-        encodeToUnary(5) == listOf(1, 1, 1, 1, 1, 0) &&
-        encodeToUnary(6) == listOf(1, 1, 1, 1, 1, 1, 0) &&
-        encodeToUnary(7) == listOf(1, 1, 1, 1, 1, 1, 1, 0) &&
-        encodeToUnary(8) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 0) &&
-        encodeToUnary(9) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
+    return encodeToUnary(1) == listOf(1, 0)
+        && encodeToUnary(2) == listOf(1, 1, 0)
+        && encodeToUnary(3) == listOf(1, 1, 1, 0)
+        && encodeToUnary(4) == listOf(1, 1, 1, 1, 0)
+        && encodeToUnary(5) == listOf(1, 1, 1, 1, 1, 0)
+        && encodeToUnary(6) == listOf(1, 1, 1, 1, 1, 1, 0)
+        && encodeToUnary(7) == listOf(1, 1, 1, 1, 1, 1, 1, 0)
+        && encodeToUnary(8) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 0)
+        && encodeToUnary(9) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 0)
 }
 
 fun levenshteinTests(): Boolean {
-    return encodeLevenshtein(0) == listOf(0) &&
-        encodeLevenshtein(1) == listOf(1, 0) &&
-        encodeLevenshtein(2) == listOf(1, 1, 0, 0) &&
-        encodeLevenshtein(3) == listOf(1, 1, 0, 1) &&
-        encodeLevenshtein(4) == listOf(1, 1, 1, 0, 0, 0, 0) &&
-        encodeLevenshtein(5) == listOf(1, 1, 1, 0, 0, 0, 1) &&
-        encodeLevenshtein(6) == listOf(1, 1, 1, 0, 0, 1, 0) &&
-        encodeLevenshtein(7) == listOf(1, 1, 1, 0, 0, 1, 1) &&
-        encodeLevenshtein(8) == listOf(1, 1, 1, 0, 1, 0, 0, 0) &&
-        encodeLevenshtein(9) == listOf(1, 1, 1, 0, 1, 0, 0, 1) &&
-        encodeLevenshtein(10) == listOf(1, 1, 1, 0, 1, 0, 1, 0) &&
-        encodeLevenshtein(11) == listOf(1, 1, 1, 0, 1, 0, 1, 1) &&
-        encodeLevenshtein(12) == listOf(1, 1, 1, 0, 1, 1, 0, 0) &&
-        encodeLevenshtein(13) == listOf(1, 1, 1, 0, 1, 1, 0, 1) &&
-        encodeLevenshtein(14) == listOf(1, 1, 1, 0, 1, 1, 1, 0) &&
-        encodeLevenshtein(15) == listOf(1, 1, 1, 0, 1, 1, 1, 1) &&
-        encodeLevenshtein(16) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0) &&
-        encodeLevenshtein(17) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1) &&
-        encodeLevenshtein(18) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0) &&
-        encodeLevenshtein(19) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1) &&
-        encodeLevenshtein(20) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0) &&
-        encodeLevenshtein(21) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1) &&
-        encodeLevenshtein(22) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0) &&
-        encodeLevenshtein(23) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1) &&
-        encodeLevenshtein(24) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0)
+    return encodeLevenshtein(0) == listOf(0)
+        && encodeLevenshtein(1) == listOf(1, 0)
+        && encodeLevenshtein(2) == listOf(1, 1, 0, 0)
+        && encodeLevenshtein(3) == listOf(1, 1, 0, 1)
+        && encodeLevenshtein(4) == listOf(1, 1, 1, 0, 0, 0, 0)
+        && encodeLevenshtein(5) == listOf(1, 1, 1, 0, 0, 0, 1)
+        && encodeLevenshtein(6) == listOf(1, 1, 1, 0, 0, 1, 0)
+        && encodeLevenshtein(7) == listOf(1, 1, 1, 0, 0, 1, 1)
+        && encodeLevenshtein(8) == listOf(1, 1, 1, 0, 1, 0, 0, 0)
+        && encodeLevenshtein(9) == listOf(1, 1, 1, 0, 1, 0, 0, 1)
+        && encodeLevenshtein(10) == listOf(1, 1, 1, 0, 1, 0, 1, 0)
+        && encodeLevenshtein(11) == listOf(1, 1, 1, 0, 1, 0, 1, 1)
+        && encodeLevenshtein(12) == listOf(1, 1, 1, 0, 1, 1, 0, 0)
+        && encodeLevenshtein(13) == listOf(1, 1, 1, 0, 1, 1, 0, 1)
+        && encodeLevenshtein(14) == listOf(1, 1, 1, 0, 1, 1, 1, 0)
+        && encodeLevenshtein(15) == listOf(1, 1, 1, 0, 1, 1, 1, 1)
+        && encodeLevenshtein(16) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0)
+        && encodeLevenshtein(17) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1)
+        && encodeLevenshtein(18) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0)
+        && encodeLevenshtein(19) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1)
+        && encodeLevenshtein(20) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 0)
+        && encodeLevenshtein(21) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1)
+        && encodeLevenshtein(22) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0)
+        && encodeLevenshtein(23) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1)
+        && encodeLevenshtein(24) == listOf(1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0)
 }
 
 fun levenshteinGammaTests(): Boolean {
-    return encodeGammaLevenshtein(0) == listOf(0) &&
-        encodeGammaLevenshtein(1) == listOf(1) &&
-        encodeGammaLevenshtein(5) == listOf(0, 1, 0, 0, 1) &&
-        encodeGammaLevenshtein(13) == listOf(0, 1, 0, 0, 0, 1, 1) &&
-        encodeGammaLevenshtein(20) == listOf(0, 0, 0, 0, 0, 1, 0, 0, 1) &&
-        encodeGammaLevenshtein(63) == listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1) &&
-        encodeGammaLevenshtein(129) == listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
+    return encodeGammaLevenshtein(0) == listOf(0)
+        && encodeGammaLevenshtein(1) == listOf(1)
+        && encodeGammaLevenshtein(5) == listOf(0, 1, 0, 0, 1)
+        && encodeGammaLevenshtein(13) == listOf(0, 1, 0, 0, 0, 1, 1)
+        && encodeGammaLevenshtein(20) == listOf(0, 0, 0, 0, 0, 1, 0, 0, 1)
+        && encodeGammaLevenshtein(63) == listOf(0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1)
+        && encodeGammaLevenshtein(129) == listOf(0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)
 }
 
 fun eliasOmegaTests(): Boolean {
-    return encodeEliasOmega(1) == listOf(0) &&
-        encodeEliasOmega(2) == listOf(1, 0, 0) &&
-        encodeEliasOmega(3) == listOf(1, 1, 0) &&
-        encodeEliasOmega(4) == listOf(1, 0, 1, 0, 0, 0) &&
-        encodeEliasOmega(5) == listOf(1, 0, 1, 0, 1, 0) &&
-        encodeEliasOmega(6) == listOf(1, 0, 1, 1, 0, 0) &&
-        encodeEliasOmega(7) == listOf(1, 0, 1, 1, 1, 0) &&
-        encodeEliasOmega(8) == listOf(1, 1, 1, 0, 0, 0, 0) &&
-        encodeEliasOmega(9) == listOf(1, 1, 1, 0, 0, 1, 0) &&
-        encodeEliasOmega(10) == listOf(1, 1, 1, 0, 1, 0, 0) &&
-        encodeEliasOmega(11) == listOf(1, 1, 1, 0, 1, 1, 0) &&
-        encodeEliasOmega(12) == listOf(1, 1, 1, 1, 0, 0, 0) &&
-        encodeEliasOmega(13) == listOf(1, 1, 1, 1, 0, 1, 0) &&
-        encodeEliasOmega(14) == listOf(1, 1, 1, 1, 1, 0, 0) &&
-        encodeEliasOmega(15) == listOf(1, 1, 1, 1, 1, 1, 0) &&
-        encodeEliasOmega(16) == listOf(1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0) &&
-        encodeEliasOmega(17) == listOf(1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0)
+    return encodeEliasOmega(1) == listOf(0)
+        && encodeEliasOmega(2) == listOf(1, 0, 0)
+        && encodeEliasOmega(3) == listOf(1, 1, 0)
+        && encodeEliasOmega(4) == listOf(1, 0, 1, 0, 0, 0)
+        && encodeEliasOmega(5) == listOf(1, 0, 1, 0, 1, 0)
+        && encodeEliasOmega(6) == listOf(1, 0, 1, 1, 0, 0)
+        && encodeEliasOmega(7) == listOf(1, 0, 1, 1, 1, 0)
+        && encodeEliasOmega(8) == listOf(1, 1, 1, 0, 0, 0, 0)
+        && encodeEliasOmega(9) == listOf(1, 1, 1, 0, 0, 1, 0)
+        && encodeEliasOmega(10) == listOf(1, 1, 1, 0, 1, 0, 0)
+        && encodeEliasOmega(11) == listOf(1, 1, 1, 0, 1, 1, 0)
+        && encodeEliasOmega(12) == listOf(1, 1, 1, 1, 0, 0, 0)
+        && encodeEliasOmega(13) == listOf(1, 1, 1, 1, 0, 1, 0)
+        && encodeEliasOmega(14) == listOf(1, 1, 1, 1, 1, 0, 0)
+        && encodeEliasOmega(15) == listOf(1, 1, 1, 1, 1, 1, 0)
+        && encodeEliasOmega(16) == listOf(1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0)
+        && encodeEliasOmega(17) == listOf(1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0)
 }
 
 fun evenRodehTests(): Boolean {
-    return encodeEvenRodeh(0) == listOf(0, 0, 0) &&
-        encodeEvenRodeh(1) == listOf(0, 0, 1) &&
-        encodeEvenRodeh(2) == listOf(0, 1, 0) &&
-        encodeEvenRodeh(3) == listOf(0, 1, 1) &&
-        encodeEvenRodeh(4) == listOf(1, 0, 0, 0) &&
-        encodeEvenRodeh(5) == listOf(1, 0, 1, 0) &&
-        encodeEvenRodeh(6) == listOf(1, 1, 0, 0) &&
-        encodeEvenRodeh(7) == listOf(1, 1, 1, 0) &&
-        encodeEvenRodeh(8) == listOf(1, 0, 0, 1, 0, 0, 0, 0) &&
-        encodeEvenRodeh(9) == listOf(1, 0, 0, 1, 0, 0, 1, 0) &&
-        encodeEvenRodeh(15) == listOf(1, 0, 0, 1, 1, 1, 1, 0) &&
-        encodeEvenRodeh(16) == listOf(1, 0, 1, 1, 0, 0, 0, 0, 0)
+    return encodeEvenRodeh(0) == listOf(0, 0, 0)
+        && encodeEvenRodeh(1) == listOf(0, 0, 1)
+        && encodeEvenRodeh(2) == listOf(0, 1, 0)
+        && encodeEvenRodeh(3) == listOf(0, 1, 1)
+        && encodeEvenRodeh(4) == listOf(1, 0, 0, 0)
+        && encodeEvenRodeh(5) == listOf(1, 0, 1, 0)
+        && encodeEvenRodeh(6) == listOf(1, 1, 0, 0)
+        && encodeEvenRodeh(7) == listOf(1, 1, 1, 0)
+        && encodeEvenRodeh(8) == listOf(1, 0, 0, 1, 0, 0, 0, 0)
+        && encodeEvenRodeh(9) == listOf(1, 0, 0, 1, 0, 0, 1, 0)
+        && encodeEvenRodeh(15) == listOf(1, 0, 0, 1, 1, 1, 1, 0)
+        && encodeEvenRodeh(16) == listOf(1, 0, 1, 1, 0, 0, 0, 0, 0)
 }
 
 fun eliasGammaTests(): Boolean {
-    return encodeEliasGamma(1) == listOf(1) &&
-        encodeEliasGamma(2) == listOf(0, 1, 0) &&
-        encodeEliasGamma(3) == listOf(0, 1, 1) &&
-        encodeEliasGamma(4) == listOf(0, 0, 1, 0, 0) &&
-        encodeEliasGamma(5) == listOf(0, 0, 1, 0, 1) &&
-        encodeEliasGamma(6) == listOf(0, 0, 1, 1, 0) &&
-        encodeEliasGamma(7) == listOf(0, 0, 1, 1, 1) &&
-        encodeEliasGamma(8) == listOf(0, 0, 0, 1, 0, 0, 0) &&
-        encodeEliasGamma(9) == listOf(0, 0, 0, 1, 0, 0, 1) &&
-        encodeEliasGamma(10) == listOf(0, 0, 0, 1, 0, 1, 0) &&
-        encodeEliasGamma(11) == listOf(0, 0, 0, 1, 0, 1, 1) &&
-        encodeEliasGamma(12) == listOf(0, 0, 0, 1, 1, 0, 0) &&
-        encodeEliasGamma(13) == listOf(0, 0, 0, 1, 1, 0, 1) &&
-        encodeEliasGamma(14) == listOf(0, 0, 0, 1, 1, 1, 0)
-
+    return (1..30).map { decodeEliasGamma(encodeEliasGamma(it)) } == (1..30).toList()
 }
 
 fun eliasDeltaTests(): Boolean {
-    return encodeEliasDelta(1) == listOf(1) &&
-        encodeEliasDelta(2) == listOf(0, 1, 0, 0) &&
-        encodeEliasDelta(3) == listOf(0, 1, 0, 1) &&
-        encodeEliasDelta(4) == listOf(0, 1, 1, 0, 0) &&
-        encodeEliasDelta(5) == listOf(0, 1, 1, 0, 1) &&
-        encodeEliasDelta(6) == listOf(0, 1, 1, 1, 0) &&
-        encodeEliasDelta(7) == listOf(0, 1, 1, 1, 1) &&
-        encodeEliasDelta(8) == listOf(0, 0, 1, 0, 0, 0, 0, 0) &&
-        encodeEliasDelta(9) == listOf(0, 0, 1, 0, 0, 0, 0, 1) &&
-        encodeEliasDelta(10) == listOf(0, 0, 1, 0, 0, 0, 1, 0) &&
-        encodeEliasDelta(11) == listOf(0, 0, 1, 0, 0, 0, 1, 1) &&
-        encodeEliasDelta(12) == listOf(0, 0, 1, 0, 0, 1, 0, 0) &&
-        encodeEliasDelta(13) == listOf(0, 0, 1, 0, 0, 1, 0, 1) &&
-        encodeEliasDelta(14) == listOf(0, 0, 1, 0, 0, 1, 1, 0) &&
-        encodeEliasDelta(15) == listOf(0, 0, 1, 0, 0, 1, 1, 1) &&
-        encodeEliasDelta(16) == listOf(0, 0, 1, 0, 1, 0, 0, 0, 0) &&
-        encodeEliasDelta(17) == listOf(0, 0, 1, 0, 1, 0, 0, 0, 1)
+    return encodeEliasDelta(1) == listOf(1)
+        && encodeEliasDelta(2) == listOf(0, 1, 0, 0)
+        && encodeEliasDelta(3) == listOf(0, 1, 0, 1)
+        && encodeEliasDelta(4) == listOf(0, 1, 1, 0, 0)
+        && encodeEliasDelta(5) == listOf(0, 1, 1, 0, 1)
+        && encodeEliasDelta(6) == listOf(0, 1, 1, 1, 0)
+        && encodeEliasDelta(7) == listOf(0, 1, 1, 1, 1)
+        && encodeEliasDelta(8) == listOf(0, 0, 1, 0, 0, 0, 0, 0)
+        && encodeEliasDelta(9) == listOf(0, 0, 1, 0, 0, 0, 0, 1)
+        && encodeEliasDelta(10) == listOf(0, 0, 1, 0, 0, 0, 1, 0)
+        && encodeEliasDelta(11) == listOf(0, 0, 1, 0, 0, 0, 1, 1)
+        && encodeEliasDelta(12) == listOf(0, 0, 1, 0, 0, 1, 0, 0)
+        && encodeEliasDelta(13) == listOf(0, 0, 1, 0, 0, 1, 0, 1)
+        && encodeEliasDelta(14) == listOf(0, 0, 1, 0, 0, 1, 1, 0)
+        && encodeEliasDelta(15) == listOf(0, 0, 1, 0, 0, 1, 1, 1)
+        && encodeEliasDelta(16) == listOf(0, 0, 1, 0, 1, 0, 0, 0, 0)
+        && encodeEliasDelta(17) == listOf(0, 0, 1, 0, 1, 0, 0, 0, 1)
 }
+
+//fun golombTests(): Boolean {
+//    return encodeGolomb(0, 1) == listOf(0) &&
+//        encodeGolomb(0, 2) == listOf(0, 0) &&
+//        encodeGolomb(0, 3) == listOf(0, 0) &&
+//        encodeGolomb(0, 4) == listOf(0, 0, 0) &&
+//        encodeGolomb(0, 5) == listOf(0, 0, 0) &&
+//        encodeGolomb(0, 6) == listOf(0, 0, 0) &&
+//        encodeGolomb(0, 8) == listOf(0, 0, 0, 0) &&
+//        encodeGolomb(1, 1) == listOf(1, 0) &&
+//        encodeGolomb(1, 2) == listOf(0, 1) &&
+//        encodeGolomb(1, 3) == listOf(0, 1, 0) &&
+//        encodeGolomb(1, 4) == listOf(0, 0, 1) &&
+//        encodeGolomb(1, 5) == listOf(0, 0, 1) &&
+//        encodeGolomb(1, 6) == listOf(0, 0, 1) &&
+//        encodeGolomb(1, 8) == listOf(0, 0, 0, 1) &&
+//        encodeGolomb(2, 1) == listOf(1, 1, 0) &&
+//        encodeGolomb(2, 2) == listOf(1, 0, 0) &&
+//        encodeGolomb(2, 3) == listOf(0, 1, 1) &&
+//        encodeGolomb(2, 4) == listOf(0, 1, 0) &&
+//        encodeGolomb(2, 5) == listOf(0, 1, 0) &&
+//        encodeGolomb(2, 6) == listOf(0, 1, 0, 0) &&
+//        encodeGolomb(2, 8) == listOf(0, 0, 1, 0) &&
+//        encodeGolomb(8, 1) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 0) &&
+//        encodeGolomb(8, 2) == listOf(1, 1, 1, 1, 0, 0) &&
+//        encodeGolomb(8, 3) == listOf(1, 1, 0, 1, 1) &&
+//        encodeGolomb(8, 4) == listOf(1, 1, 0, 0, 0) &&
+//        encodeGolomb(8, 5) == listOf(1, 0, 1, 1, 0) &&
+//        encodeGolomb(8, 6) == listOf(1, 0, 1, 0, 0) &&
+//        encodeGolomb(8, 8) == listOf(1, 0, 0, 0, 0) &&
+//        encodeGolomb(17, 1) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0) &&
+//        encodeGolomb(17, 2) == listOf(1, 1, 1, 1, 1, 1, 1, 1, 0, 1) &&
+//        encodeGolomb(17, 3) == listOf(1, 1, 1, 1, 1, 0, 1, 1) &&
+//        encodeGolomb(17, 4) == listOf(1, 1, 1, 1, 0, 0, 1) &&
+//        encodeGolomb(17, 5) == listOf(1, 1, 1, 0, 1, 0) &&
+//        encodeGolomb(17, 6) == listOf(1, 1, 0, 1, 1, 1) &&
+//        encodeGolomb(17, 8) == listOf(1, 1, 0, 0, 0, 1)
+//}
+
+//fun fibonacciTests(): Boolean {
+//    return encodeFibonacci(0) == listOf(0)
+//        && encodeFibonacci(1) == listOf(1, 1)
+//        && encodeFibonacci(2) == listOf(0, 1, 1)
+//        && encodeFibonacci(3) == listOf(0, 0, 1, 1)
+//        && encodeFibonacci(4) == listOf(1, 0, 1, 1)
+//        && encodeFibonacci(5) == listOf(0, 0, 0, 1, 1)
+//        && encodeFibonacci(6) == listOf(1, 0, 0, 1, 1)
+//        && encodeFibonacci(7) == listOf(0, 1, 0, 1, 1)
+//        && encodeFibonacci(8) == listOf(0, 0, 0, 0, 1, 1)
+//        && encodeFibonacci(9) == listOf(1, 0, 0, 0, 1, 1)
+//        && encodeFibonacci(10) == listOf(0, 1, 0, 0, 1, 1)
+//
+//}
