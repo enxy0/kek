@@ -1,4 +1,5 @@
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.log2
 import kotlin.math.pow
 
@@ -25,7 +26,7 @@ fun main() {
 //    }
 
 // Код Шеннона-Фано
-    encodeWithShannonFano(inputString())
+    println(encodeWithShannonFano(inputString()))
 }
 
 /** Считывает список целочисленных значений из консоли */
@@ -37,7 +38,7 @@ fun inputNumbers(): BinaryList =
 
 fun inputString(): String = readLine()!!.toString()
 
-/** Производит кодирование методом Шеннона */
+/** Кодирование методом Шеннона */
 fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
     val kraftCondition = lengths.foldIndexed(0.0) { index, acc, item ->
         val isNotFirstAndNotLast =
@@ -64,7 +65,8 @@ fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
     }.dropLast(1)
 }
 
-fun encodeWithShannonFano(input: String): List<BinaryList> {
+/** Кодирование Шеннона-Фано */
+fun encodeWithShannonFano(input: String): Map<Char, BinaryList> {
     val map = input.map { it }
         .toSet()
         .map { letter ->
@@ -82,15 +84,27 @@ fun encodeWithShannonFano(input: String): List<BinaryList> {
         .dropLast(1)
         .toMutableList()
 
-    val words = map.toList().forEachIndexed { index, (_, freq) ->
-        val digit = ceil(log2(freq)).toInt()
+    val encodedList = mutableListOf<BinaryList>()
+    map.values.forEachIndexed { index, freq ->
+        val encodedValue = mutableListOf<Int>()
+        val digit = ceil(-log2(freq)).toInt()
         cumulativeList[index] *= 2.0
 
         for (j in 1 until digit) {
-            
+            encodedValue += floor(cumulativeList[index]).toInt()
+            if (cumulativeList[index] >= 1) {
+                cumulativeList[index]--
+            }
+            cumulativeList[index] *= 2.0
         }
+
+        encodedValue += floor(cumulativeList[index]).toInt()
+        encodedList += encodedValue
     }
-    return emptyList()
+
+    return encodedList
+        .zip(map.keys) { encoded, char -> char to encoded }
+        .toMap()
 }
 
 /**
