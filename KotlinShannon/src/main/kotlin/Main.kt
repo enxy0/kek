@@ -6,37 +6,118 @@ import kotlin.math.pow
 /**
  * Метод Шеннона, код Шеннона-Фано, код Гилберта-Мура
  *
- * Количество решенных задач: 1
+ * Количество решенных задач: 3
  * Общее количество задач: 3
  *
  * Автор: Бушуев Никита Федорович
- * Дата: 05.11.2020
+ * Дата: 05.11.2020, 13.11.2020
  * Kotlin: 1.4.10 (jvm)
- *
  */
 
 
 fun main() {
-//    Метод Шеннона
-//    val encodedList = encodeWithShannonMethod(inputNumbers())
-//    if (encodedList.isPrefixed) {
-//        println(encodedList)
-//    } else {
-//        println("Построенный код не является префиксным!")
-//    }
-
-// Код Шеннона-Фано
-    println(encodeWithShannonFano(inputString()))
+    runTests()
 }
 
-/** Считывает список целочисленных значений из консоли */
-fun inputNumbers(): BinaryList =
-    readLine()!!
-        .split(' ')
-        .map { it.toInt() }
-        .toMutableList()
+fun runTests() {
+    // Метод Шеннона
+    testHeader("Shannon Method")
+    test(
+        input = mutableListOf(1..5),
+        answer = binaryListOf(
+            "0", "10", "110", "1110", "11110"
+        ),
+        algorithm = ::encodeWithShannonMethod
+    )
+    test(
+        input = mutableListOf(1, 2, 1),
+        answer = emptyList(),
+        algorithm = ::encodeWithShannonMethod
+    )
+    test(
+        input = mutableListOf(3, 3, 3, 4, 4, 4, 4),
+        answer = binaryListOf(
+            "000", "001", "010", "0110", "0111", "1000", "1001"
+        ),
+        algorithm = ::encodeWithShannonMethod
+    )
 
-fun inputString(): String = readLine()!!.toString()
+    // Кодирование Шеннона-Фано
+    testHeader("Shannon-Fano")
+    test(
+        input = "aaaaaaabccccddddddd",
+        answer = binaryListOf(
+            "00", "01", "101", "11110"
+        ),
+        algorithm = ::encodeWithShannonFano
+    )
+    test(
+        input = "aabbccddeeffgg",
+        answer = binaryListOf(
+            "000", "001", "010", "011", "100", "101", "110"
+        ),
+        algorithm = ::encodeWithShannonFano
+    )
+    test(
+        input = "",
+        answer = emptyList(),
+        algorithm = ::encodeWithShannonFano
+    )
+    test(
+        input = "123456789",
+        answer = binaryListOf(
+            "0000", "0001", "0011", "0101",
+            "0111", "1000", "1010", "1100", "1110"
+        ),
+        algorithm = ::encodeWithShannonFano
+    )
+
+    // Кодирование Гилберт-Мура
+    testHeader("Gilbert-Moore")
+    test(
+        input = "3334444",
+        answer = binaryListOf("001", "10"),
+        algorithm = ::encodeWithGilbertMoore
+    )
+    test(
+        input = "ab",
+        answer = binaryListOf("01", "11"),
+        algorithm = ::encodeWithGilbertMoore
+    )
+    test(
+        input = "abcdefghjklmn",
+        answer = binaryListOf(
+            "00001", "00011", "00110", "01000",
+            "01011", "01101", "10000", "10010",
+            "10100", "10111", "11001", "11100",
+            "11110"
+        ),
+        algorithm = ::encodeWithGilbertMoore
+    )
+}
+
+fun <T> test(
+    input: T,
+    answer: List<BinaryList>,
+    algorithm: (T) -> List<BinaryList>
+) {
+    val codes = algorithm(input)
+    val isPrefixed = codes.isPrefixed
+    val isCorrect = answer == codes
+    println("Input    = ${if (input is String) "\"$input\"" else input.toString()}")
+    println("Encoded  = $codes")
+    println("Prefixed = ${if (isPrefixed) "yes" else "no"}")
+    println("Result   = ${if (isCorrect) "passed" else "error"}")
+    println("--------------------------------------------------------------")
+}
+
+fun testHeader(header: String) {
+    println()
+    println()
+    println("---------------------- Running tests on ----------------------")
+    println("Algorithm: $header")
+    println("--------------------------------------------------------------")
+}
 
 /** Кодирование методом Шеннона */
 fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
@@ -44,14 +125,12 @@ fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
         val isNotFirstAndNotLast =
             index != 0 && index != lengths.size
         if (isNotFirstAndNotLast && lengths[index - 1] > item) {
-            println("Заданные длины не удовлетворяют условию Шеннона.")
             return emptyList()
         }
         acc + 2.0.pow(-item)
     } <= 1
 
     if (!kraftCondition) {
-        println("Заданные длины не удовлетворяют неравенству Крафта.")
         return emptyList()
     }
 
@@ -66,18 +145,10 @@ fun encodeWithShannonMethod(lengths: BinaryList): List<BinaryList> {
 }
 
 /** Кодирование Шеннона-Фано */
-fun encodeWithShannonFano(input: String): Map<Char, BinaryList> {
-    val map = input.map { it }
-        .toSet()
-        .map { letter ->
-            val count = input.filter { letter == it }.length
-            val probability = count / input.length.toDouble()
-
-            letter to probability
-        }
+fun encodeWithShannonFano(input: String): List<BinaryList> {
+    val map = listOfCharFrequencies(input)
         .sortedByDescending { it.second }
         .toMap()
-        .also { println(it) }
 
     val cumulativeList = map.values
         .runningFold(0.0) { acc, item -> acc + item }
@@ -103,9 +174,56 @@ fun encodeWithShannonFano(input: String): Map<Char, BinaryList> {
     }
 
     return encodedList
-        .zip(map.keys) { encoded, char -> char to encoded }
-        .toMap()
 }
+
+/** Кодирование Шеннона-Фано */
+fun encodeWithGilbertMoore(input: String): List<BinaryList> {
+    val map = listOfCharFrequencies(input)
+        .toMap()
+
+    val frequencies = map.values.toMutableList()
+    val cumulativeList = mutableListOf(0.0)
+    val deltaList = mutableListOf(frequencies.first() / 2.0)
+
+    (0 until frequencies.size).forEach { index ->
+        if (index != frequencies.size - 1) {
+            cumulativeList += cumulativeList[index] + frequencies[index]
+            deltaList += cumulativeList[index + 1] + frequencies[index + 1] / 2.0
+        }
+    }
+
+    val encodedList = mutableListOf<BinaryList>()
+    frequencies.forEachIndexed { index, freq ->
+        val encodedValue = mutableListOf<Int>()
+        val digit = 1 + (ceil(-log2(freq)).toInt())
+        deltaList[index] *= 2.0
+
+        for (j in 1 until digit) {
+            encodedValue += floor(deltaList[index]).toInt()
+            if (deltaList[index] >= 1) {
+                deltaList[index]--
+            }
+            deltaList[index] *= 2.0
+        }
+
+        encodedValue += floor(deltaList[index]).toInt()
+        encodedList += encodedValue
+    }
+
+    return encodedList
+}
+
+/**
+ * Возвращает список пар из букв и их частот
+ */
+fun listOfCharFrequencies(input: String) = input.map { it }
+    .toSet()
+    .map { letter ->
+        val count = input.filter { letter == it }.length
+        val probability = count / input.length.toDouble()
+
+        letter to probability
+    }
 
 /**
  * Свойство isPrefixed, вычисляющее является ли построенный
@@ -113,20 +231,12 @@ fun encodeWithShannonFano(input: String): Map<Char, BinaryList> {
  */
 val List<BinaryList>.isPrefixed: Boolean
     get() {
-        for (i in indices) {
-            for (j in i + 1 until size) {
-                var isNotEqual = false
-                for (k in this[i].indices) {
-                    if (this[i][k] != this[j][k]) {
-                        isNotEqual = true
-                    }
-                }
-                if (!isNotEqual) {
+        forEachIndexed { i, item ->
+            for (j in i + 1 until size)
+                if (item == take(item.size))
                     return false
-                }
-            }
         }
-        return true
+        return this.isNotEmpty()
     }
 
 
@@ -150,11 +260,6 @@ infix fun BinaryList.addTo(other: BinaryList): BinaryList {
         acc
     }
 }
-
-/** Возвращает двоичное представление числа Int в виде List<Int> */
-fun Int.toBinaryList(): BinaryList = toString(radix = 2).map {
-    it.toString().toInt()
-}.toMutableList()
 
 /**
  *  Создает изменяемый список заданного размера size,
@@ -180,5 +285,11 @@ fun syncLists(
     }
     return first to second
 }
+
+fun binaryListOf(vararg codes: String): List<BinaryList> = codes.map { code ->
+    code.map { digit -> digit.toString().toInt() }.toMutableList()
+}
+
+fun mutableListOf(values: IntRange) = values.toMutableList()
 
 typealias BinaryList = MutableList<Int>
