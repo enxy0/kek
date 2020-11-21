@@ -1,3 +1,0 @@
-"C:\Programs\JetBrains\CLion 2020.2.1\bin\cmake\win\bin\cmake.exe" -E rm -f CMakeFiles\RLE.dir/objects.a
-C:\MinGW\bin\ar.exe cr CMakeFiles\RLE.dir/objects.a @CMakeFiles\RLE.dir\objects1.rsp
-C:\MinGW\bin\g++.exe -g   -Wl,--whole-archive CMakeFiles\RLE.dir/objects.a -Wl,--no-whole-archive  -o RLE.exe -Wl,--out-implib,libRLE.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\RLE.dir\linklibs.rsp
