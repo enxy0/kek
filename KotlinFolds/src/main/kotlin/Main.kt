@@ -292,12 +292,15 @@ fun <T> foldl1(f: (T, T) -> T, list: List<T>): T =
 fun <T> foldr1(f: (T, T) -> T, list: List<T>): T =
     list.reduceRight(f)
 
+// Первый элемент списка
 fun <T> fst(list: List<T>): T = list.first()
 
+// Композиция функции двух функций с одним аргументом
 infix fun <T, R, V> ((T) -> R).compose(other: (R) -> V): (T) -> V = {
     other(this(it))
 }
 
+// Композиция функции с двумя аргументами и функции с одним аргументом с одинаковыми типами
 infix fun <T> ((T, T) -> T).compose(other: (T) -> T): (T, T) -> T = { first, second ->
     this(other(first), second)
 }
